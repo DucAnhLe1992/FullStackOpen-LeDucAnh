@@ -30,7 +30,6 @@ const App = () => {
     } else {
       window.alert(`${newName} is already added to phonebook`);
     }
-    console.log(persons);
   };
 
   const handleNameChange = (event) => {

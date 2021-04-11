@@ -3,32 +3,42 @@ import "./App.css";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
 import Persons from "./components/Persons";
+import personServices from "./services/personServices";
 import axios from "axios";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [id, setId] = useState(0);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((res) => {
-      setPersons(res.data);
-      setId(res.data.length + 1);
-    });
+    personServices.getAllPersons().then((data) => setPersons(data));
   }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
+    const doesExists = persons.find((person) => person.name === newName);
 
-    if (persons.find((person) => person.name === newName) === undefined) {
-      setId(id + 1);
-      setPersons(persons.concat({ name: newName, number: newNumber, id: id }));
-      setNewName("");
-      setNewNumber("");
+    if (doesExists === undefined) {
+      const newPerson = { name: newName, number: newNumber };
+      personServices.createNewPerson(newPerson).then((newPerson) => {
+        setPersons(persons.concat(newPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     } else {
-      window.alert(`${newName} is already added to phonebook`);
+      const needReplace = window.confirm(
+        `${newName} is already added to phonebook, replace the number with the new one?`
+      );
+      if (needReplace) {
+        const changedPerson = { ...doesExists, number: newNumber };
+        personServices
+          .changePersonNumber(doesExists.id, changedPerson)
+          .then((res) => {
+            setPersons(persons.map(person => person.id !== doesExists.id ? person : res.data));
+          });
+      }
     }
   };
 
@@ -57,7 +67,12 @@ const App = () => {
         newNumber={newNumber}
       />
 
-      <Persons persons={persons} filter={filter} />
+      <Persons
+        persons={persons}
+        filter={filter}
+        deleteAPerson={personServices.deleteAPerson}
+        setPersons={setPersons}
+      />
     </div>
   );
 };

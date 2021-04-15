@@ -24,18 +24,27 @@ const App = () => {
 
     if (doesExists === undefined) {
       const newPerson = { name: newName, number: newNumber };
-      personServices.createNewPerson(newPerson).then((newPerson) => {
-        setPersons(persons.concat(newPerson));
-        setNewName("");
-        setNewNumber("");
-        setNotification(`Added ${newName}`, "successStyle");
-      });
+      personServices
+        .createNewPerson(newPerson)
+        .then((newPerson) => {
+          setPersons(persons.concat(newPerson));
+          setNewName("");
+          setNewNumber("");
+          setNotification(`Added ${newName}`, "successStyle");
+        })
+        .catch((error) => {
+          setNotification(`${error.response.data.error}`, "errorStyle");
+        });
     } else {
       const needReplace = window.confirm(
         `${newName} is already added to phonebook, replace the number with the new one?`
       );
       if (needReplace) {
-        const changedPerson = { ...doesExists, number: newNumber };
+        const changedPerson = {
+          ...doesExists,
+
+          number: newNumber,
+        };
         personServices
           .changePersonNumber(doesExists.id, changedPerson)
           .then((res) => {
@@ -50,11 +59,8 @@ const App = () => {
             );
           })
           .catch((error) => {
-            setNotification(
-              `Person ${changedPerson.name} not found!`,
-              "errorStyle"
-            );
-            setPersons(persons.filter((person) => person.id !== doesExists.id));
+            setNotification(`${error.response.data.error}`, "errorStyle");
+            //setPersons(persons.filter((person) => person.id !== doesExists.id));
           });
       }
     }

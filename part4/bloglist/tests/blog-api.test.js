@@ -1,17 +1,25 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const supertest = require("supertest");
 const helper = require("./test-helper");
 const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
 
+let token;
+beforeAll((done) => {
+  api
+    .post("/api/login")
+    .send({ username: "root", password: "secret" })
+    .end((error, res) => {
+      token = res.body.token;
+      done();
+    });
+});
+
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
-
-  /* const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
-  const promiseBlogArray = blogObjects.map((blog) => blog.save());
-  await Promise.all(promiseBlogArray); */
 });
 
 describe("When there are initially some blogs saved", () => {
@@ -52,6 +60,7 @@ describe("Posting of a new blog", () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(200)
       .expect("Content-Type", /application\/json/);
@@ -62,33 +71,42 @@ describe("Posting of a new blog", () => {
     const newlyPostedBlog = Object.keys(
       blogsAtEnd[helper.initialBlogs.length]
     ).reduce((object, key) => {
-      if (key !== "id") {
+      if (key !== "id" && key !== "user") {
         object[key] = blogsAtEnd[helper.initialBlogs.length][key];
       }
       return object;
     }, {});
+
     expect(newlyPostedBlog).toEqual(newBlog);
   });
 
   test("if the likes property is missing, then it is 0 by default", async () => {
     const newBlog = {
-      title: "The Intelligent Investor",
-      author: "Benjamin Graham",
-      url: "https://www.amazon.de/-/en/Benjamin-Graham/dp/0060555661",
+      title: "The Ideal Garden",
+      author: "H. H. Thomas",
+      url: "https://www.amazon.de/-/en/H-Thomas/dp/1528714725",
     };
 
     await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("Authorization", `Bearer ${token}`)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
     const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd[helper.initialBlogs.length]).toEqual({
-      ...newBlog,
-      id: blogsAtEnd[helper.initialBlogs.length].id,
-      likes: 0,
-    });
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+    const newlyPostedBlog = Object.keys(
+      blogsAtEnd[helper.initialBlogs.length]
+    ).reduce((object, key) => {
+      if (key !== "id" && key !== "user") {
+        object[key] = blogsAtEnd[helper.initialBlogs.length][key];
+      }
+      return object;
+    }, {});
+
+    expect(newlyPostedBlog).toEqual({ ...newBlog, likes: 0 });
   });
 
   test("If the url or title is missing then report error", async () => {
@@ -140,7 +158,11 @@ describe("Deletion of a blog", () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
+      
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
 

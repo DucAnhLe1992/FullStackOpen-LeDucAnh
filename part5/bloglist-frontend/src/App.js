@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
+import BlogForm from "./components/BlogForm";
+import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [notification, setNotification] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -52,18 +53,11 @@ const App = () => {
     setUser(null);
   };
 
-  const addBlog = (event) => {
-    event.preventDefault();
-    const newBlog = {
-      title: title,
-      author: author,
-      url: url,
-    };
-
-    blogService.create(newBlog);
-    setTitle("");
-    setAuthor("");
-    setUrl("");
+  const addBlog = (newBlog) => {
+    blogFormRef.current.toggleVisibility();
+    blogService.create(newBlog).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog));
+    });
     setNotification({
       message: `A new blog with title "${newBlog.title}" by author "${newBlog.author}" has been successfully added!`,
       type: "success",
@@ -71,6 +65,22 @@ const App = () => {
     setTimeout(() => {
       setNotification(null);
     }, 5000);
+  };
+
+  const likeBlog = (blog) => {
+    const newBlog = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+    };
+    blogService.update(blog.id.valueOf(), newBlog).then((returnedBlog) => {
+      console.log(returnedBlog.id.valueOf())
+      setBlogs(
+        blogs.filter((blog) => blog.id.valueOf() !== returnedBlog.id.valueOf()).concat(returnedBlog)
+      );
+
+    });
   };
 
   const loginForm = () => (
@@ -99,52 +109,37 @@ const App = () => {
     </form>
   );
 
-  const blogForm = () => (
-    <div>
-      <div>
-        Welcome back, {user.username}
-        <button type="button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-      <form onSubmit={addBlog}>
-        <div>
-          Title:{" "}
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          Author:{" "}
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          Url:{" "}
-          <input value={url} onChange={({ target }) => setUrl(target.value)} />
-        </div>
-        <div>
-          <button type="submit">Create</button>
-        </div>
-        <div>
-          {blogs.map((blog) => {
-            if (blog.user.id === user.id)
-              return <Blog key={blog.id} blog={blog} />;
-          })}
-        </div>
-      </form>
-    </div>
-  );
-
   return (
     <div>
       <h2>Blogs</h2>
 
       <Notification notif={notification} />
-      {user === null ? loginForm() : blogForm()}
+      {user === null ? (
+        loginForm()
+      ) : (
+        <div>
+          <div>
+            Welcome back, {user.username}
+            <button type="button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+          <Togglable
+            buttonOpen="New blog"
+            buttonClose="Cancel"
+            ref={blogFormRef}
+          >
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
+          <div>
+            {blogs.sort((a, b) => b.likes - a.likes).map((blog) => {
+              if (blog.user.id === user.id) {
+                return <Blog key={blog.id} blog={blog} toLikeBlog={likeBlog} />;
+              }
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

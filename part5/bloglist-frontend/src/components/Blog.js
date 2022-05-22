@@ -23,7 +23,7 @@ const Blog = ({ blog, toLikeBlog }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div style={hideWhenVisible}>
         <div>{blog.title}</div>
         <button onClick={toggleVisibility}>view</button>
@@ -36,7 +36,6 @@ const Blog = ({ blog, toLikeBlog }) => {
           {blog.likes} likes
           <button onClick={likeBlog}>like</button>
         </div>
-        <div>{blog.id.valueOf()}</div>
         <div>
           <button>remove this post</button>
         </div>

@@ -34,6 +34,11 @@ const reducer = (state = initialState, action) => {
         vote.id !== action.payload.id ? vote : changedVote
       );
     }
+
+    case "ADD_NEW_ANECDOTE": {
+      return [...state, action.payload];
+    }
+
     default:
       return state;
   }
@@ -43,6 +48,17 @@ export const vote = (id) => {
   return {
     type: "VOTE",
     payload: { id },
+  };
+};
+
+export const addNew = (content) => {
+  return {
+    type: "ADD_NEW_ANECDOTE",
+    payload: {
+      content,
+      id: getId(),
+      votes: 0,
+    },
   };
 };
 

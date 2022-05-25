@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@manaflair/redux-batch": "^1.0.0",
+    "@reduxjs/toolkit": "^1.8.2",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^14.1.1",
@@ -11,6 +13,7 @@
     "react-redux": "^8.0.1",
     "react-scripts": "5.0.1",
     "redux": "^4.2.0",
+    "redux-logger": "^3.0.6",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

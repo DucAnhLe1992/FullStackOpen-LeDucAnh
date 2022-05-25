@@ -10,6 +10,10 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
     dispatch(addNew(content));
+    dispatch({
+      type: 'notification/createNotification',
+      payload: `You created "${content}"`
+    })
   };
 
   return (

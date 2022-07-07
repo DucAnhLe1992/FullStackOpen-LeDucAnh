@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
-const Blog = ({ blog, toLikeBlog }) => {
+import { likeBlog, removeBlog } from "../redux/reducers/blogReducer";
+
+const Blog = ({ blog }) => {
+  const dispatch = useDispatch();
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -17,9 +22,18 @@ const Blog = ({ blog, toLikeBlog }) => {
     setVisible(!visible);
   };
 
-  const likeBlog = (event) => {
+  const likeABlog = (event) => {
     event.preventDefault();
-    toLikeBlog(blog);
+    const newBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+    };
+    dispatch(likeBlog(newBlog));
+  };
+
+  const removeABlog = (event) => {
+    event.preventDefault();
+    dispatch(removeBlog(blog.id));
   };
 
   return (
@@ -35,10 +49,10 @@ const Blog = ({ blog, toLikeBlog }) => {
         <div>{blog.url}</div>
         <div>
           {blog.likes} likes
-          <button onClick={likeBlog}>like</button>
+          <button onClick={likeABlog}>like</button>
         </div>
         <div>
-          <button>remove this post</button>
+          <button onClick={removeABlog}>remove this post</button>
         </div>
         <div>
           <button onClick={toggleVisibility}>hide</button>
@@ -50,7 +64,6 @@ const Blog = ({ blog, toLikeBlog }) => {
 
 Blog.propTypes = {
   blog: PropTypes.any.isRequired,
-  toLikeBlog: PropTypes.func.isRequired,
 };
 
 export default Blog;

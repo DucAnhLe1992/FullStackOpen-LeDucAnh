@@ -12,8 +12,4 @@ const Notification = () => {
   return <div className={notification.type}>{notification.message}</div>;
 };
 
-Notification.propTypes = {
-  notif: PropTypes.any.isRequired,
-};
-
 export default Notification;

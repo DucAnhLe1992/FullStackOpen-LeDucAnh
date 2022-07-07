@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import { setNotification } from "./redux/reducers/notificationReducer";
 
 const App = () => {
+  const dispatch = useDispatch();
+
   const [blogs, setBlogs] = useState([]);
-  const [notification, setNotification] = useState(null);
+  // const [notification, setNotification] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -40,10 +45,7 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setNotification({ message: "Wrong credentials", type: "error" });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+      dispatch(setNotification("Wrong credentials", "error", 5));
     }
   };
 
@@ -58,13 +60,13 @@ const App = () => {
     blogService.create(newBlog).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog));
     });
-    setNotification({
-      message: `A new blog with title "${newBlog.title}" by author "${newBlog.author}" has been successfully added!`,
-      type: "success",
-    });
-    setTimeout(() => {
-      setNotification(null);
-    }, 5000);
+    dispatch(
+      setNotification(
+        `A new blog with title "${newBlog.title}" by author "${newBlog.author}" has been successfully added!`,
+        "success",
+        5
+      )
+    );
   };
 
   const likeBlog = (blog) => {
@@ -75,11 +77,12 @@ const App = () => {
       likes: blog.likes + 1,
     };
     blogService.update(blog.id.valueOf(), newBlog).then((returnedBlog) => {
-      console.log(returnedBlog.id.valueOf())
+      console.log(returnedBlog.id.valueOf());
       setBlogs(
-        blogs.filter((blog) => blog.id.valueOf() !== returnedBlog.id.valueOf()).concat(returnedBlog)
+        blogs
+          .filter((blog) => blog.id.valueOf() !== returnedBlog.id.valueOf())
+          .concat(returnedBlog)
       );
-
     });
   };
 
@@ -113,7 +116,8 @@ const App = () => {
     <div>
       <h2>Blogs</h2>
 
-      <Notification notif={notification} />
+      <Notification />
+
       {user === null ? (
         loginForm()
       ) : (
@@ -132,11 +136,15 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           <div>
-            {blogs.sort((a, b) => b.likes - a.likes).map((blog) => {
-              if (blog.user.id === user.id) {
-                return <Blog key={blog.id} blog={blog} toLikeBlog={likeBlog} />;
-              }
-            })}
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map((blog) => {
+                if (blog.user.id === user.id) {
+                  return (
+                    <Blog key={blog.id} blog={blog} toLikeBlog={likeBlog} />
+                  );
+                }
+              })}
           </div>
         </div>
       )}

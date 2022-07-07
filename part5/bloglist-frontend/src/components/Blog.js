@@ -31,6 +31,7 @@ const Blog = ({ blog, toLikeBlog }) => {
 
       <div style={showWhenVisible}>
         <div>{blog.title}</div>
+        <div>{blog.author}</div>
         <div>{blog.url}</div>
         <div>
           {blog.likes} likes

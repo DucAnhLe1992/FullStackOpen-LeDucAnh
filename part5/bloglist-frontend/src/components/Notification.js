@@ -1,11 +1,15 @@
 import React from "react";
-import "../index.css";
+import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
-const Notification = ({ notif }) => {
-  return notif === null ? null : (
-    <div className={notif.type}>{notif.message}</div>
-  );
+import "../index.css";
+
+const Notification = () => {
+  const notification = useSelector((state) => state.notification);
+
+  if (notification.message === "" || notification.time === 0) return null;
+
+  return <div className={notification.type}>{notification.message}</div>;
 };
 
 Notification.propTypes = {

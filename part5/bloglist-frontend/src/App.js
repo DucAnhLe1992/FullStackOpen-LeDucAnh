@@ -5,45 +5,31 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+
 import { setNotification } from "./redux/reducers/notificationReducer";
-import {
-  initializeBlogs,
-  createBlog,
-} from "./redux/reducers/blogReducer";
+import { initializeBlogs, createBlog } from "./redux/reducers/blogReducer";
+import { userLogin, userLogout } from "./redux/reducers/loginReducer";
 
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
 
   const blogFormRef = useRef();
 
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blogs);
+  const user = useSelector((state) => state.login);
+
   useEffect(() => {
     dispatch(initializeBlogs());
   }, [dispatch]);
 
-  useEffect(() => {
-    const loggedInUser = window.localStorage.getItem("loggedInUser");
-    if (loggedInUser) {
-      const user = JSON.parse(loggedInUser);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
   const handleLogin = async (event) => {
     event.preventDefault();
-    console.log("logging in with ", username, password);
+    // console.log("logging in with ", username, password);
 
     try {
-      const user = await loginService.login({ username, password });
-      blogService.setToken(user.token);
-      window.localStorage.setItem("loggedInUser", JSON.stringify(user));
-      setUser(user);
+      dispatch(userLogin(username, password));
       setUsername("");
       setPassword("");
     } catch (exception) {
@@ -53,8 +39,7 @@ const App = () => {
 
   const handleLogout = (event) => {
     event.preventDefault();
-    window.localStorage.removeItem("loggedInUser");
-    setUser(null);
+    dispatch(userLogout());
   };
 
   const addBlog = (newBlog) => {
@@ -123,9 +108,7 @@ const App = () => {
               .sort((a, b) => b.likes - a.likes)
               .map((blog) => {
                 if (blog.user.id === user.id) {
-                  return (
-                    <Blog key={blog.id} blog={blog} />
-                  );
+                  return <Blog key={blog.id} blog={blog} />;
                 }
               })}
           </div>

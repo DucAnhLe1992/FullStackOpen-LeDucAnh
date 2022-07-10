@@ -5,9 +5,6 @@ const blogReducer = createSlice({
   name: "blogs",
   initialState: [],
   reducers: {
-    addNewBlog(state, action) {
-      state.push(action.payload);
-    },
     appendBlog(state, action) {
       state.push(action.payload);
     },
@@ -53,6 +50,6 @@ export const removeBlog = (id) => {
   };
 };
 
-export const { addNewBlog, appendBlog, updateBlog, deleteBlog, setBlogs } =
+export const { appendBlog, updateBlog, deleteBlog, setBlogs } =
   blogReducer.actions;
 export default blogReducer.reducer;

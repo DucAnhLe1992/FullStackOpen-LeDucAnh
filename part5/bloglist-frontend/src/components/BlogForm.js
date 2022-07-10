@@ -1,23 +1,40 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
 
-const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+import { createBlog } from "../redux/reducers/blogReducer";
+import { setNotification } from "../redux/reducers/notificationReducer";
+
+import { useField } from "../hooks";
+
+const BlogForm = () => {
+  const title = useField("text");
+  const author = useField("text");
+  const url = useField("text");
+
+  const dispatch = useDispatch();
 
   const addBlog = (event) => {
     event.preventDefault();
+
     const newBlog = {
-      title: title,
-      author: author,
-      url: url,
+      title: title.value,
+      author: author.value,
+      url: url.value,
     };
 
-    createBlog(newBlog);
-    setTitle("");
-    setAuthor("");
-    setUrl("");
+    dispatch(createBlog(newBlog));
+    dispatch(
+      setNotification(
+        `A new blog with title "${newBlog.title}" by author "${newBlog.author}" has been successfully added!`,
+        "success",
+        5
+      )
+    );
+
+    const reset = { target: { value: "" } };
+    title.onChange(reset);
+    author.onChange(reset);
+    url.onChange(reset);
   };
 
   return (
@@ -26,21 +43,15 @@ const BlogForm = ({ createBlog }) => {
       <form onSubmit={addBlog}>
         <div>
           <label>Title:</label>
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+          <input {...title} />
         </div>
         <div>
           <label>Author:</label>
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           <label>URL:</label>
-          <input value={url} onChange={({ target }) => setUrl(target.value)} />
+          <input {...url} />
         </div>
         <div>
           <button type="submit">Create</button>
@@ -48,10 +59,6 @@ const BlogForm = ({ createBlog }) => {
       </form>
     </div>
   );
-};
-
-BlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired,
 };
 
 export default BlogForm;

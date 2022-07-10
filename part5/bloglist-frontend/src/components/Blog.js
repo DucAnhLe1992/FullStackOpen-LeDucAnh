@@ -1,11 +1,17 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import PropTypes from "prop-types";
-
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { likeBlog, removeBlog } from "../redux/reducers/blogReducer";
 
-const Blog = ({ blog }) => {
+const Blog = () => {
   const dispatch = useDispatch();
+  const blogId = useParams("/blogs/:id");
+
+  const blogs = useSelector((state) => state.blogs);
+  const users = useSelector((state) => state.users);
+
+  const blog = blogs.find((blog) => blog.id === blogId.id);
+  const user = users.find((user) => user.id === blog.user.id);
 
   const blogStyle = {
     paddingTop: 10,
@@ -13,13 +19,6 @@ const Blog = ({ blog }) => {
     border: "solid",
     borderWidth: 1,
     marginBottom: 5,
-  };
-
-  const [visible, setVisible] = useState(false);
-  const hideWhenVisible = { display: visible ? "none" : "" };
-  const showWhenVisible = { display: visible ? "" : "none" };
-  const toggleVisibility = () => {
-    setVisible(!visible);
   };
 
   const likeABlog = (event) => {
@@ -38,32 +37,21 @@ const Blog = ({ blog }) => {
 
   return (
     <div className="blog" style={blogStyle}>
-      <div style={hideWhenVisible}>
-        <div>{blog.title}</div>
-        <button onClick={toggleVisibility}>view</button>
-      </div>
-
-      <div style={showWhenVisible}>
-        <div>{blog.title}</div>
+      <div>
+        <h3>{blog.title}</h3>
         <div>{blog.author}</div>
-        <div>{blog.url}</div>
+        <a href={blog.url}>{blog.url}</a>
         <div>
           {blog.likes} likes
           <button onClick={likeABlog}>like</button>
         </div>
+        <div>Added by {user.name}</div>
         <div>
           <button onClick={removeABlog}>remove this post</button>
-        </div>
-        <div>
-          <button onClick={toggleVisibility}>hide</button>
         </div>
       </div>
     </div>
   );
-};
-
-Blog.propTypes = {
-  blog: PropTypes.any.isRequired,
 };
 
 export default Blog;

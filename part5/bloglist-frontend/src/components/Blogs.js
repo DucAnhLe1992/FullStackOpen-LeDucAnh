@@ -14,7 +14,7 @@ const Blogs = () => {
           .map((blog) => {
             if (blog.user.id === user.id) {
               return (
-                <li>
+                <li key={blog.id}>
                   <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
                 </li>
               );

@@ -38,7 +38,7 @@ export const createBlog = (content) => {
 
 export const likeBlog = (blog) => {
   return async (dispatch) => {
-    const likedBlog = await blogService.update(blog.id, blog);
+    await blogService.update(blog.id, blog);
     dispatch(updateBlog(blog));
   };
 };

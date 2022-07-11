@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
+import { TextField, Button } from "@mui/material";
 
 import { createBlog } from "../redux/reducers/blogReducer";
 import { setNotification } from "../redux/reducers/notificationReducer";
@@ -42,19 +43,18 @@ const BlogForm = () => {
       <h3>Create a new blog</h3>
       <form onSubmit={addBlog}>
         <div>
-          <label>Title:</label>
-          <input {...title} />
+          <TextField {...title} label="Title" />
         </div>
         <div>
-          <label>Author:</label>
-          <input {...author} />
+          <TextField {...author} label="Author" />
         </div>
         <div>
-          <label>URL:</label>
-          <input {...url} />
+          <TextField {...url} label="URL" />
         </div>
         <div>
-          <button type="submit">Create</button>
+          <Button variant="contained" color="primary" type="submit">
+            Create
+          </Button>
         </div>
       </form>
     </div>

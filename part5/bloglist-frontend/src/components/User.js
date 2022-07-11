@@ -1,6 +1,14 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
 const User = () => {
   const userId = useParams("/users/:id");
@@ -12,17 +20,27 @@ const User = () => {
     <div>
       <h3>{user.name}</h3>
       <h4>Added blogs</h4>
-      <ul>
-        {blogs.map((blog) => {
-          if (blog.user.id === userId.id) {
-            return (
-              <li key={blog.id}>
-                <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-              </li>
-            );
-          }
-        })}
-      </ul>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {blogs.map((blog) => {
+              if (blog.user.id === userId.id) {
+                return (
+                  <TableRow key={blog.id}>
+                    <TableCell>
+                      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                    </TableCell>
+                    <TableCell>
+                      {blog.likes} {blog.likes > 1 ? "likes" : "like"}
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };

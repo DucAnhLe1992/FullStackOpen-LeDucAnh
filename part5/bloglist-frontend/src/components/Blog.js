@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Box, List, ListItem, ListItemText, ListItemButton } from "@mui/material";
 
 import { likeBlog, removeBlog } from "../redux/reducers/blogReducer";
 import { getAllComments, postAComment } from "../redux/reducers/commentReducer";

@@ -1,5 +1,21 @@
 const { UserInputError, ApolloServer, gql } = require("apollo-server");
+const mongoose = require("mongoose");
 const { v1: uuid } = require("uuid");
+require("dotenv").config();
+
+const Author = require("./models/author");
+const Book = require("./models/book");
+
+const MONGODB_URI = process.env.MONGODB_URI;
+
+mongoose
+  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log("error connection to MongoDB", error.message);
+  });
 
 let authors = [
   {
@@ -93,14 +109,14 @@ const typeDefs = gql`
   type Query {
     authorCount: Int!
     bookCount: Int!
-    allBooks(author: String, genre: String): [Book!]!
+    allBooks(author: String, genre: String): [Author!]!
     allAuthors: [Author!]!
   }
 
   type Book {
     title: String!
     published: Int!
-    author: String!
+    author: Author!
     id: ID!
     genres: [String!]!
   }
@@ -126,11 +142,11 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    authorCount: () => authors.length,
-    bookCount: () => books.length,
+    authorCount: async () => Author.collection.countDocuments(),
+    bookCount: async () => Book.collection.countDocuments(),
 
-    allBooks: (root, args) => {
-      if (!args.author && !args.genre) return books;
+    allBooks: async (root, args) => {
+      /* if (!args.author && !args.genre) return books;
 
       if (args.author && !args.genre)
         return books.filter((b) => b.author === args.author);
@@ -140,13 +156,47 @@ const resolvers = {
 
       return books
         .filter((b) => b.genres.includes(args.genre))
-        .filter((b) => b.author === args.author);
+        .filter((b) => b.author === args.author); */
+      if (!args.author) {
+        return Author.find({});
+      }
+      const author = await Author.find({ name: args.author });
+      console.log(author);
+      return Author.find({ name: args.author });
+
+      /* return Book.aggregate([
+        {
+          $lookup: {
+            from: "authors",
+            let: {
+              author_id: "$author",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $eq: ["$id", "$$author"],
+                      },
+                      {
+                        $eq: [args.author, "$name"],
+                      }
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "books",
+          },
+        },
+      ]); */
     },
-    allAuthors: () => authors,
+    allAuthors: async (root, args) => Author.find({}),
   },
 
   Author: {
-    bookCount: (root) => books.filter((b) => b.author === root.name).length,
+    bookCount: (root) => Book.collection.countDocuments({ author: root.name }),
   },
 
   Mutation: {

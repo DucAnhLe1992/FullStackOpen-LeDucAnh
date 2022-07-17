@@ -11,7 +11,7 @@ const ChangeBirthyear = ({ show, setError }) => {
     refetchQueries: [{ query: ALL_AUTHORS }],
   });
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
 
     editBirthyear({ variables: { name, year } });

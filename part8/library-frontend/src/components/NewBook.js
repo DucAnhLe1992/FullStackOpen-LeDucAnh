@@ -13,7 +13,6 @@ const NewBook = ({ show, setError }) => {
   const [createBook] = useMutation(CREATE_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
     onError: (error) => {
-      console.log(error);
       setError(error.graphQLErrors[0].message);
     },
   });
@@ -48,6 +47,7 @@ const NewBook = ({ show, setError }) => {
 
   return (
     <div>
+      <h2>add book</h2>
       <form onSubmit={submit}>
         <div>
           title

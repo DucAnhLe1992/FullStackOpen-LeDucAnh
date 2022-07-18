@@ -7,6 +7,7 @@ import ChangeBirthyear from "./components/ChangeBirthyear";
 import NewBook from "./components/NewBook";
 import Notify from "./components/Notify";
 import Login from "./components/Login";
+import Recommend from "./components/Recommend";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -38,6 +39,7 @@ const App = () => {
           <>
             <button onClick={() => setPage("add")}>add book</button>
             <button onClick={() => setPage("change")}>change birthyear</button>
+            <button onClick={() => setPage("recommend")}>recommend</button>
             <button onClick={logout}>logout</button>
           </>
         ) : (
@@ -51,6 +53,7 @@ const App = () => {
       <Books show={page === "books"} />
       <NewBook show={page === "add"} setError={notify} />
       <ChangeBirthyear show={page === "change"} setError={notify} />
+      <Recommend show={page === "recommend"} />
       <Login
         show={page === "login"}
         setError={notify}

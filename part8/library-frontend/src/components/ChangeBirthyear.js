@@ -32,7 +32,7 @@ const ChangeBirthyear = ({ show, setError }) => {
 
   return (
     <div>
-      <h2>Change birthyear of author</h2>
+      <h2>change birthyear of author</h2>
 
       <form onSubmit={submit}>
         <div>

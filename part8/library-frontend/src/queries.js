@@ -1,41 +1,51 @@
 import { gql } from "@apollo/client/core";
 
-export const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
+const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    title
+    author {
       name
       born
       bookCount
     }
+    published
+    genres
   }
+`;
+
+const AUTHOR_DETAILS = gql`
+  fragment AuthorDetails on Author {
+    name
+    born
+    bookCount
+  }
+`;
+
+export const ALL_AUTHORS = gql`
+  query {
+    allAuthors {
+      ...AuthorDetails
+    }
+  }
+  ${AUTHOR_DETAILS}
 `;
 
 export const ALL_BOOKS = gql`
   query {
     allBooks {
-      title
-      author {
-        name
-        bookCount
-      }
-      published
-      genres
+      ...BookDetails
     }
   }
+  ${BOOK_DETAILS}
 `;
 
 export const BOOKS_BY_GENRE = gql`
   query searchByGenre($genre: String!) {
     allBooks(genre: $genre) {
-      title
-      author {
-        name
-        bookCount
-      }
-      published
-      genres
+      ...BookDetails
     }
   }
+  ${BOOK_DETAILS}
 `;
 
 export const MY_ACCOUNT = gql`
@@ -60,24 +70,28 @@ export const CREATE_BOOK = gql`
       published: $published
       genres: $genres
     ) {
-      title
-      author {
-        name
-      }
-      published
-      genres
+      ...BookDetails
     }
   }
+  ${BOOK_DETAILS}
+`;
+
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+  ${BOOK_DETAILS}
 `;
 
 export const EDIT_BIRTHYEAR = gql`
   mutation editBirthyear($name: String!, $year: Int!) {
     editAuthor(name: $name, setBornTo: $year) {
-      name
-      born
-      bookCount
+      ...AuthorDetails
     }
   }
+  ${AUTHOR_DETAILS}
 `;
 
 export const LOGIN = gql`

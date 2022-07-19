@@ -24,7 +24,7 @@ const ChangeBirthyear = ({ show, setError }) => {
     if (result.data && result.data.editAuthor === null) {
       setError("Author not found");
     }
-  }, [result.data]);
+  }, [result.data, setError]);
 
   if (!show) {
     return null;

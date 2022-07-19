@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { useApolloClient } from "@apollo/client";
+import {
+  useApolloClient,
+  useQuery,
+  useSubscription,
+  useMutation,
+} from "@apollo/client";
 
 import Authors from "./components/Authors";
 import Books from "./components/Books";
@@ -8,12 +13,37 @@ import NewBook from "./components/NewBook";
 import Notify from "./components/Notify";
 import Login from "./components/Login";
 import Recommend from "./components/Recommend";
+import { ALL_BOOKS, BOOK_ADDED } from "./queries";
+
+export const updateCache = (cache, query, addedBook) => {
+  const uniqueByName = (a) => {
+    let seen = new Set();
+    return a.filter((item) => {
+      let k = item.name;
+      return seen.has(k) ? false : seen.add(k);
+    });
+  };
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqueByName(allBooks.concat(addedBook)),
+    };
+  });
+};
 
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const client = useApolloClient();
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.bookAdded;
+      notify(`${addedBook.title} added`);
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
+    },
+  });
 
   const notify = (message) => {
     setErrorMessage(message);

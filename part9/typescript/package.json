@@ -7,8 +7,20 @@
     "ts-node": "ts-node",
     "bmi": "ts-node src/bmiCalculator.ts",
     "calculator": "ts-node src/exerciseCalculator.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts",
+    "dev": "ts-node-dev index.ts",
+    "lint": "eslint ---ext .ts"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "body-parser": "^1.20.0",
+    "eslint": "^8.20.0",
+    "express": "^4.18.1",
+    "ts-node-dev": "^2.0.0"
+  }
 }

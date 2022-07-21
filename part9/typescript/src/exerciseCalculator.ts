@@ -38,7 +38,7 @@ const parseValues = (args: Array<string>): exerciseValues => {
   };
 };
 
-const exerciseCalculator = (hours: number[], target: number): Result => {
+export const exerciseCalculator = (hours: number[], target: number): Result => {
   let trainingDays = 0;
   let success = false;
   let rating: Rating;
@@ -81,6 +81,7 @@ const exerciseCalculator = (hours: number[], target: number): Result => {
 try {
   const { hours, target } = parseValues(process.argv);
   console.log(exerciseCalculator(hours, target));
+  console.log(typeof hours);
 } catch (error: unknown) {
   if (error instanceof Error) {
     console.log("Error: ", error.message);

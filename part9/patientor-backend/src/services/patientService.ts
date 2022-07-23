@@ -17,8 +17,13 @@ const getNonSsnPatients = (): NonSsnPatient[] => {
   }));
 };
 
+const findPatientById = (id: string): Patient | undefined => {
+  const patient = patients.find((p) => p.id === id);
+  return patient;
+};
+
 const addPatient = () => {
   return [];
 };
 
-export default { getPatients, addPatient, getNonSsnPatients };
+export default { getPatients, addPatient, getNonSsnPatients, findPatientById };

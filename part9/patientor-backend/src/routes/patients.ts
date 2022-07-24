@@ -7,7 +7,7 @@ router.get("/", (_req, res) => {
   res.send(patientService.getNonSsnPatients());
 });
 
-router.get(":id", (req, res) => {
+router.get("/:id", (req, res) => {
   const patient = patientService.findPatientById(req.params.id);
 
   if (patient) {
@@ -17,8 +17,18 @@ router.get(":id", (req, res) => {
   }
 });
 
-router.post("/", (_req, res) => {
-  res.send("Saving a patient!");
+router.post("/", (req, res) => {
+  const { name, occupation, gender, ssn, dateOfBirth } = req.body;
+
+  const newPatient = patientService.addPatient({
+    name,
+    occupation,
+    gender,
+    ssn,
+    dateOfBirth,
+  });
+
+  res.json(newPatient);
 });
 
 export default router;

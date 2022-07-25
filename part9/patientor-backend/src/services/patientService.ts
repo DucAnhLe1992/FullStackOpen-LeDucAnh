@@ -1,14 +1,25 @@
 import { v1 as uuid } from "uuid";
-import patientData from "../data/patients.json";
-import { Patient, NonSsnPatient, NewPatient } from "../types";
-
-const patients: Patient[] = patientData as Array<Patient>;
+import { Patient, NonSsnPatient, NewPatient, PublicPatient } from "../types";
+import patients from "../data/patients";
 
 const getPatients = (): Patient[] => {
   return patients;
 };
 
 const getNonSsnPatients = (): NonSsnPatient[] => {
+  return patients.map(
+    ({ id, name, occupation, gender, dateOfBirth, entries }) => ({
+      id,
+      name,
+      occupation,
+      gender,
+      dateOfBirth,
+      entries,
+    })
+  );
+};
+
+const getPublicPatients = (): PublicPatient[] => {
   return patients.map(({ id, name, occupation, gender, dateOfBirth }) => ({
     id,
     name,
@@ -33,4 +44,10 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
-export default { getPatients, addPatient, getNonSsnPatients, findPatientById };
+export default {
+  getPatients,
+  addPatient,
+  getNonSsnPatients,
+  findPatientById,
+  getPublicPatients,
+};

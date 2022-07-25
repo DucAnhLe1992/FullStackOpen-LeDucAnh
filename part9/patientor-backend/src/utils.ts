@@ -64,6 +64,7 @@ const toNewPatient = ({
     gender: parseGender(gender),
     ssn: ssn ? parseSsn(ssn) : undefined,
     dateOfBirth: dateOfBirth ? parseDOB(dateOfBirth) : undefined,
+    entries: []
   };
 
   return newPatient;

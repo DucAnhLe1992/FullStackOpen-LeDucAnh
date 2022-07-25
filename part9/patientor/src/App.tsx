@@ -9,7 +9,7 @@ import { useStateValue } from "./state";
 
 import PatientListPage from "./PatientListPage";
 import PatientPage from "./PatientPage";
-import { Patient } from "./types";
+import { Diagnosis, Patient } from "./types";
 
 const App = () => {
   const [, dispatch] = useStateValue();
@@ -21,7 +21,11 @@ const App = () => {
         const { data: patientListFromApi } = await axios.get<Patient[]>(
           `${apiBaseUrl}/patients`
         );
+        const { data: diagnosesListFromApi } = await axios.get<Diagnosis[]>(
+          `${apiBaseUrl}/diagnoses`
+        );
         dispatch({ type: "SET_PATIENT_LIST", payload: patientListFromApi });
+        dispatch({ type: "SET_DIAGNOSIS_LIST", payload: diagnosesListFromApi });
       } catch (e) {
         let errorMessage = "Something went wrong.";
         if (axios.isAxiosError(e) && e.response) {

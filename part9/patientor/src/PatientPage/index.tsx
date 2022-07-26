@@ -3,13 +3,14 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Male, Female, Transgender } from "@mui/icons-material";
 
+import EntryDetails from "../EntryDetails";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
-import { Patient, Entry, Diagnosis } from "../types";
+import { Patient, Entry } from "../types";
 
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patient, diagnoses }, dispatch] = useStateValue();
+  const [{ patient }, dispatch] = useStateValue();
   useEffect(() => {
     const fetchSinglePatient = async (id: string) => {
       try {
@@ -28,10 +29,6 @@ const PatientPage = () => {
     void fetchSinglePatient(id as string);
   }, [patient, dispatch]);
 
-  const searchForDiagnosis = (diagnosisList: Diagnosis[], code: string) => {
-    return diagnosisList.find((d: Diagnosis) => d.code === code);
-  };
-
   return (
     <div>
       <h2>
@@ -49,21 +46,7 @@ const PatientPage = () => {
       <h3>entries</h3>
       <p>
         {patient.entries.map((entry: Entry) => (
-          <div key={entry.id}>
-            <p>
-              {entry.date} <i>{entry.description}</i>
-            </p>
-            <ul>
-              {entry.diagnosisCodes &&
-                entry.diagnosisCodes.map((code: string) => (
-                  <li key={code}>
-                    {code}{" "}
-                    {diagnoses.length > 0 &&
-                      searchForDiagnosis(diagnoses, code)?.name}
-                  </li>
-                ))}
-            </ul>
-          </div>
+          <EntryDetails key={entry.id} entry={entry} />
         ))}
       </p>
     </div>

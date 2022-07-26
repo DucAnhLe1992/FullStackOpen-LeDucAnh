@@ -1,4 +1,4 @@
-import { Gender, NewPatient } from "./types";
+import { Gender, NewPatient } from "../types";
 
 type Fields = {
   name: unknown;

@@ -1,5 +1,12 @@
 import { v1 as uuid } from "uuid";
-import { Patient, NonSsnPatient, NewPatient, PublicPatient } from "../types";
+import {
+  Patient,
+  NonSsnPatient,
+  NewPatient,
+  PublicPatient,
+  HealthCheckEntry,
+  NewHealthCheckEntry,
+} from "../types";
 import patients from "../data/patients";
 
 const getNonSsnPatients = (): NonSsnPatient[] => {
@@ -40,9 +47,26 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
+const addHealthCheckEntry = (
+  entry: NewHealthCheckEntry,
+  patientId: string
+): NewHealthCheckEntry => {
+  const id = uuid();
+  const newEntry = {
+    id,
+    ...entry,
+    type: "HealthCheck",
+  };
+  patients
+    .find((patient: Patient) => patient.id === patientId)
+    ?.entries.push(newEntry as HealthCheckEntry);
+  return newEntry;
+};
+
 export default {
   addPatient,
   getNonSsnPatients,
   findPatientById,
   getPublicPatients,
+  addHealthCheckEntry,
 };

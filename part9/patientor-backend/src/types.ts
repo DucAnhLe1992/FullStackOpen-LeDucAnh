@@ -65,3 +65,10 @@ export interface Patient {
 export type NonSsnPatient = Omit<Patient, "ssn">;
 export type NewPatient = Omit<Patient, "id">;
 export type PublicPatient = Omit<Patient, "ssn" | "entries">;
+
+export type NewHealthCheckEntry = Omit<HealthCheckEntry, "id" | "type">;
+export type NewOccupationalHealthcareEntry = Omit<
+  OccupationalHealthcareEntry,
+  "id" | "type"
+>;
+export type NewHospitalEntry = Omit<HospitalEntry, "id" | "type">;
